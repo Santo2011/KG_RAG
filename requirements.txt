@@ -1,7 +1,7 @@
 streamlit==1.17.0
-setuptools<68.0
+setuptools>=68.0  # Ensure compatibility with Python 3.12+
 wheel
-neo4j==5.9.0
+neo4j==5.15.0  # Use a newer version compatible with Python 3.12
 langchain
 langchain_groq
 huggingface_hub
@@ -13,5 +13,4 @@ python-dotenv
 scikit-learn
 langchain-community
 sentence-transformers
-altair
-
+altair>=5.0  # Ensure compatibility with Streamlit
