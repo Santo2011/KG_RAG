@@ -153,7 +153,7 @@ st.markdown("""
 GROQ_API_KEY = "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"
 llm = ChatGroq(
     api_key=GROQ_API_KEY,
-    model_name="llama3-70b"
+    model_name="llama3-70b-8192"
 )
 
 # Neo4j Configuration
