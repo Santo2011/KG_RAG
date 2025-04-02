@@ -39,6 +39,7 @@ class KnowledgeGraphRAG:
         self.embeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/all-mpnet-base-v2")
 
     def create_vector_store(self, documents: List):
+        """Store document embeddings in Neo4j"""
         vector_store = Neo4jVector.from_documents(
             documents,
             self.embeddings,
@@ -53,7 +54,6 @@ class KnowledgeGraphRAG:
         return vector_store
 
     def create_knowledge_graph(self, documents: List):
-
         with self.driver.session() as session:
             for doc in documents:
                 prompt = f"""
@@ -97,6 +97,26 @@ class KnowledgeGraphRAG:
         kg_data = self.retrieve_graph_data()
         return {"rag_answer": rag_answer, "knowledge_graph": kg_data}
 
+    def visualize_graph(kg_data):
+
+        net = Network(height="600px", width="100%", directed=True)
+
+        # Add nodes and edges
+        for rel in kg_data:
+            net.add_node(rel["source"], label=rel["source"], color="#1E88E5")
+            net.add_node(rel["target"], label=rel["target"], color="#D81B60")
+            net.add_edge(rel["source"], rel["target"], label=rel["relationship"])
+
+        # Save and display the graph
+        path = "graph.html"
+        net.save_graph(path)
+
+        with open(path, "r", encoding="utf-8") as f:
+            html_code = f.read()
+        
+        st.components.v1.html(html_code, height=600)
+
+
 def main():
     st.title("🌟 Advanced RAG with Knowledge Graph Retrieval")
     rag_system = KnowledgeGraphRAG()
@@ -128,11 +148,17 @@ def main():
             results = rag_system.query(question)
         
         st.markdown("### 📝 Answer")
-        st.markdown(f"``` {results['rag_answer']} ```")
+        st.markdown(f"""
+```
+{results['rag_answer']}
+```""")
         
         st.markdown("### 🔗 Related Knowledge Graph Data")
-        for rel in results["knowledge_graph"]:
-            st.markdown(f"🔹 {rel['source']} → *{rel['relationship']}* → {rel['target']}")
+        
+        if results["knowledge_graph"]:
+            visualize_graph(results["knowledge_graph"])
+        else:
+            st.warning("No relationships found in the knowledge graph.")
 
 if __name__ == "__main__":
     main()
