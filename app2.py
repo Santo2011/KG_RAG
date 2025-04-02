@@ -157,9 +157,9 @@ llm = ChatGroq(
 )
 
 # Neo4j Configuration
-NEO4J_URI = "neo4j+s://f859410b.databases.neo4j.io"
+NEO4J_URI = "neo4j+s://947f4e44.databases.neo4j.io"
 NEO4J_USER = "neo4j"
-NEO4J_PASSWORD = "UDAQaAOeey_dYNj2krLzpTeTINjnPgRgcJ4XeLtotpE"
+NEO4J_PASSWORD = "R7T40DT9nt7bUkcTkNj0qybHD-zBW2BAWgVN7nt8F6k"
 
 class KnowledgeGraphRAG:
     def __init__(self):
