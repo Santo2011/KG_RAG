@@ -57,6 +57,7 @@ class KnowledgeGraphRAG:
             print(f"❌ Error creating vector store: {e}")
 
 
+
     def create_knowledge_graph(self, documents: List):
         with self.driver.session() as session:
             for doc in documents:
