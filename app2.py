@@ -40,114 +40,6 @@ class KnowledgeGraphRAG:
         with self.driver.session() as session:
             session.run("MATCH (n) DETACH DELETE n")
 
-    def store_graph_in_neo4j(self, graph: nx.DiGraph):
-        with self.driver.session() as session:
-            for node in graph.nodes(data=True):
-                session.run("MERGE (n:Node {name: $name})", {'name': node[1]['label']})
-            for edge in graph.edges(data=True):
-                session.run(
-                    """
-                    MATCH (a:Node {name: $source}), (b:Node {name: $target})
-                    MERGE (a)-[:RELATED_TO {type: $label}]->(b)
-                    """,
-                    {'source': graph.nodes[edge[0]]['label'],
-                     'target': graph.nodes[edge[1]]['label'],
-                     'label': edge[2].get('label', 'Price In')}
-                )
-
-st.markdown("### 📈 Upload Historical Data for Knowledge Graph and Price Prediction")
-uploaded_csv = st.file_uploader("Upload CSV with historical price data", type="csv")
-
-if uploaded_csv:
-    historical_data = pd.read_csv(uploaded_csv)
-    st.write("Historical Data:", historical_data.head())
-    if all(col in historical_data.columns for col in ['Date', 'Crop', 'Price (INR/quintal)']):
-        historical_data['Year'] = pd.to_datetime(historical_data['Date'], dayfirst=True).dt.year
-        selected_crop = st.selectbox("Select a crop for price prediction:", historical_data['Crop'].unique())
-        crop_data = historical_data[historical_data['Crop'] == selected_crop]
-
-        G = nx.DiGraph()
-        for _, row in crop_data.iterrows():
-            year = row['Year']
-            price = row['Price (INR/quintal)']
-            G.add_node(year, label=f'Year: {year}')
-            G.add_node(price, label=f'Price: ₹{price}')
-            G.add_edge(year, price, label='Price In')
-        st.markdown(f"### 🌐 Knowledge Graph Visualization for {selected_crop}")
-        pos = nx.spring_layout(G)
-        fig = go.Figure()
-        for edge in G.edges(data=True):
-            x0, y0 = pos[edge[0]]
-            x1, y1 = pos[edge[1]]
-            fig.add_trace(go.Scatter(x=[x0, x1], y=[y0, y1],
-                                     mode='lines',
-                                     line=dict(color='gray'),
-                                     hoverinfo='none'))
-        for node in G.nodes(data=True):
-            x, y = pos[node[0]]
-            fig.add_trace(go.Scatter(x=[x], y=[y],
-                                     mode='markers+text',
-                                     text=node[1].get('label', str(node[0])),
-                                     textposition='top center',
-                                     marker=dict(size=10, color='green')))
-        fig.update_layout(showlegend=False,
-                          xaxis=dict(showgrid=False, zeroline=False, showticklabels=False),
-                          yaxis=dict(showgrid=False, zeroline=False, showticklabels=False),
-                          template='plotly_dark')
-        st.plotly_chart(fig, use_container_width=True)
-
-        # Store graph in Neo4j
-        rag_system = KnowledgeGraphRAG()
-        if st.button("Store Knowledge Graph in Neo4j"):
-            with st.spinner("Storing graph in Neo4j..."):
-                rag_system.delete_database()
-                rag_system.store_graph_in_neo4j(G)
-            st.success("Knowledge Graph stored successfully!")
-
-        # Price Prediction
-        st.markdown("### 🔮 Predict Future Prices")
-        X = crop_data[['Year']].astype(int)
-        y = crop_data['Price (INR/quintal)']
-        model = LinearRegression()
-        model.fit(X, y)
-        target_year = st.number_input("Enter the year to predict price for the selected crop:", min_value=2025, step=1)
-        if target_year:
-            predicted_price = model.predict(np.array([[target_year]]))[0]
-            st.success(f"Predicted Price for {selected_crop} in {target_year}: ₹{predicted_price:.2f} per quintal")
-    else:
-        st.error("CSV must contain 'Date', 'Crop', and 'Price (INR/quintal)' columns.")
-
-# Custom CSS for better UI
-st.markdown("""
-<style>
-    .stApp {
-        background: linear-gradient(to right, #1a1a1a, #2d2d2d);
-        color: #ffffff;
-    }
-    .stButton>button {
-        background-color: #4CAF50;
-        color: white;
-        border-radius: 20px;
-        padding: 10px 24px;
-        border: none;
-    }
-    .stButton>button:hover {
-        background-color: #45a049;
-    }
-    .upload-box {
-        border: 2px dashed #4CAF50;
-        border-radius: 10px;
-        padding: 20px;
-        text-align: center;
-    }
-    .graph-container {
-        background: rgba(255, 255, 255, 0.1);
-        border-radius: 10px;
-        padding: 20px;
-        margin-top: 20px;
-    }
-</style>
-""", unsafe_allow_html=True)
 
 # Initialize Groq
 GROQ_API_KEY = "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"
@@ -156,10 +48,6 @@ llm = ChatGroq(
     model_name="llama3-70b-8192"
 )
 
-# Neo4j Configuration
-NEO4J_URI = "neo4j+s://947f4e44.databases.neo4j.io"
-NEO4J_USER = "neo4j"
-NEO4J_PASSWORD = "R7T40DT9nt7bUkcTkNj0qybHD-zBW2BAWgVN7nt8F6k"
 
 class KnowledgeGraphRAG:
     def __init__(self):
