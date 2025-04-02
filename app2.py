@@ -80,7 +80,7 @@ class KnowledgeGraphRAG:
             return [dict(record) for record in result]
 
     def query(self, question: str) -> Dict:
-        """Retrieve relevant document passages and relationships"""
+
         vector_store = Neo4jVector(
             self.embeddings,
             url=NEO4J_URI,
