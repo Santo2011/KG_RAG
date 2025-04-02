@@ -41,17 +41,7 @@ class KnowledgeGraphRAG:
     def create_vector_store(self, documents: List):
         print("📌 Creating vector store...")  # Debug print
         try:
-            vector_store = Neo4jVector.from_documents(
-                documents,
-                self.embeddings,
-                url=NEO4J_URI,
-                username=NEO4J_USER,
-                password=NEO4J_PASSWORD,
-                index_name="document_vectors",
-                node_label="Document",
-                embedding_node_property="embedding",
-                text_node_property="text"
-            )
+            vector_store = Neo4jVector.from_documents(documents, self.embeddings, url=NEO4J_URI, username=NEO4J_USER, password=NEO4J_PASSWORD, index_name="document_vectors", node_label="Document", embedding_node_property="embedding", text_node_property="text")
             print("✅ Vector store created successfully!")  # Debug print
         except Exception as e:
             print(f"❌ Error creating vector store: {e}")
