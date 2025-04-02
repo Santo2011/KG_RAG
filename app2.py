@@ -39,7 +39,7 @@ class KnowledgeGraphRAG:
         self.embeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/all-mpnet-base-v2")
 
     def create_vector_store(self, documents: List):
-    print("📌 Creating vector store...")  # Debug print
+        print("📌 Creating vector store...")  # Debug print
     try:
         vector_store = Neo4jVector.from_documents(
             documents,
