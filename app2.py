@@ -39,7 +39,9 @@ class KnowledgeGraphRAG:
         self.embeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/all-mpnet-base-v2")
 
     def create_vector_store(self, documents: List):
-        """Store document embeddings in Neo4j"""
+    """Store document embeddings in Neo4j"""
+    print("📌 Creating vector store...")  # Debug print
+    try:
         vector_store = Neo4jVector.from_documents(
             documents,
             self.embeddings,
@@ -51,7 +53,10 @@ class KnowledgeGraphRAG:
             embedding_node_property="embedding",
             text_node_property="text"
         )
-        return vector_store
+        print("✅ Vector store created successfully!")  # Debug print
+    except Exception as e:
+        print(f"❌ Error creating vector store: {e}")
+
 
     def create_knowledge_graph(self, documents: List):
         with self.driver.session() as session:
