@@ -75,7 +75,7 @@ class KnowledgeGraphRAG:
             result = session.run("""
             MATCH (e1:Entity)-[r:RELATES]->(e2:Entity)
             RETURN e1.name as source, r.type as relationship, e2.name as target
-            ""
+            """
             )
             return [dict(record) for record in result]
 
