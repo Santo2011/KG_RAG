@@ -1,16 +1,21 @@
 streamlit
-setuptools>=68.0 
+setuptools
 wheel
-neo4j==5.15.0  
+neo4j
 langchain
-langchain_groq
-huggingface_hub
+langchain-groq
+langchain-community
+huggingface-hub
+transformers
+torch
 networkx
 plotly
 pyvis
 py2neo
 python-dotenv
 scikit-learn
-langchain-community
 sentence-transformers
-altair>=5.0  # Ensure compatibility with Streamlit
+altair
+pandas
+numpy
+tqdm
