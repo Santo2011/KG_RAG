@@ -6,8 +6,8 @@ import plotly.graph_objects as go
 from langchain_groq import ChatGroq
 from langchain_core.messages import HumanMessage
 from langchain.chains import RetrievalQA
-from langchain.vectorstores import Neo4jVector
-from langchain.embeddings import HuggingFaceEmbeddings
+from langchain_community.vectorstores import Neo4jVector
+from langchain_community.embeddings import HuggingFaceEmbeddings
 from transformers import AutoModelForCausalLM, AutoTokenizer
 import torch
 from pyvis.network import Network
