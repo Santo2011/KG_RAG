@@ -8,7 +8,7 @@ from langchain_core.messages import HumanMessage
 from langchain.chains import RetrievalQA
 from langchain_community.vectorstores import Neo4jVector
 from langchain_community.embeddings import HuggingFaceEmbeddings
-from transformers import AutoModelForCausalLM, AutoTokenizer
+# from transformers import AutoModelForCausalLM, AutoTokenizer
 import torch
 from pyvis.network import Network
 import streamlit.components.v1 as components
